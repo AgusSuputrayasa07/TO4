@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulator Ujian — TKA Matematika SMA 2026</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,500&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.395.0/dist/umd/lucide.min.js" onerror="this.remove()"></script>
+
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          navy:   { 950:'#0B1220', 900:'#0F172A', 800:'#152036', 700:'#1E293B' },
+          slateink: { 700:'#334155', 600:'#475569', 500:'#64748B', 400:'#94A3B8', 300:'#CBD5E1', 200:'#E2E8F0', 100:'#EEF2F8', 50:'#F6F8FC' },
+          brand:  { 700:'#1D4ED8', 600:'#2563EB', 500:'#3B82F6', 100:'#DBEAFE', 50:'#EFF5FF' },
+          good:   { 700:'#15803D', 600:'#16A34A', 100:'#DCFCE7', 50:'#F0FDF4' },
+          bad:    { 700:'#B91C1C', 600:'#DC2626', 100:'#FEE2E2', 50:'#FEF2F2' },
+          warn:   { 700:'#B45309', 600:'#D97706', 100:'#FEF3C7', 50:'#FFFBEB' },
+        },
+        fontFamily: {
+          sans: ['"Plus Jakarta Sans"','ui-sans-serif','system-ui','sans-serif'],
+          mono: ['"JetBrains Mono"','ui-monospace','monospace'],
+        },
+        boxShadow: {
+          card: '0 1px 2px rgba(15,23,42,.04), 0 12px 32px -16px rgba(15,23,42,.14)',
+          pop:  '0 20px 60px -20px rgba(15,23,42,.35)',
+        },
+        borderRadius: { '2xl': '1.15rem', '3xl': '1.6rem' },
+      }
+    }
+  }
+</script>
+
+<style>
+  :root{
+    --ink: #0F172A;
+  }
+  html,body{ background:#F3F6FB; }
+  body{ font-family:"Plus Jakarta Sans",ui-sans-serif,system-ui,sans-serif; color:var(--ink); }
+  .num-tab{ font-variant-numeric: tabular-nums; }
+  ::selection{ background:#BFDBFE; }
+
+  /* subtle grid texture for hero backgrounds */
+  .grid-texture{
+    background-image:
+      radial-gradient(circle at 1px 1px, rgba(255,255,255,.14) 1px, transparent 0);
+    background-size: 22px 22px;
+  }
+
+  /* katex sizing */
+  .katex{ font-size: 1.04em; }
+  .math-block .katex-display{ margin: .85rem 0; overflow-x:auto; overflow-y:hidden; padding-bottom:2px; }
+  .prose-q p{ margin: 0 0 .65rem 0; line-height:1.65; }
+  .prose-q p:last-child{ margin-bottom:0; }
+  .prose-q ul{ margin: .4rem 0 .8rem 0; }
+  .prose-q li{ margin:.2rem 0; line-height:1.55; }
+
+  .q-table{ border-collapse:collapse; width:100%; margin:.75rem 0 1rem; font-size:.92em; }
+  .q-table th, .q-table td{ border:1px solid #DCE3EE; padding:.45rem .65rem; text-align:center; }
+  .q-table thead th{ background:#EFF5FF; color:#1D4ED8; font-weight:700; }
+  .q-table td:first-child, .q-table th:first-child{ text-align:left; }
+
+  .q-box{ border:1.5px dashed #CBD5E1; border-radius:1rem; padding:.9rem 1.1rem; background:#F8FAFC; margin:.75rem 0; }
+
+  .opt-shell{
+    position:relative; display:flex; gap:.8rem; align-items:flex-start;
+    border:1.5px solid #E2E8F0; background:#fff; border-radius:1rem;
+    padding:.85rem 1rem; cursor:pointer; transition:border-color .15s, background .15s, box-shadow .15s;
+  }
+  .opt-shell:hover{ border-color:#93C5FD; background:#F8FBFF; }
+  .opt-shell.is-selected{ border-color:#2563EB; background:#EFF5FF; box-shadow:0 0 0 3px rgba(37,99,235,.10); }
+  .opt-shell.is-correct{ border-color:#16A34A; background:#F0FDF4; }
+  .opt-shell.is-incorrect{ border-color:#DC2626; background:#FEF2F2; }
+  .opt-radio{
+    flex:none; width:1.3rem; height:1.3rem; border-radius:9999px; border:2px solid #CBD5E1;
+    display:flex; align-items:center; justify-content:center; margin-top:.1rem; background:#fff;
+    transition:border-color .15s, background .15s;
+  }
+  .opt-shell.is-selected .opt-radio{ border-color:#2563EB; }
+  .opt-radio-dot{ width:.62rem; height:.62rem; border-radius:9999px; background:#2563EB; opacity:0; transform:scale(.4); transition:opacity .12s, transform .12s; }
+  .opt-shell.is-selected .opt-radio-dot{ opacity:1; transform:scale(1); }
+
+  .opt-check{
+    flex:none; width:1.3rem; height:1.3rem; border-radius:.4rem; border:2px solid #CBD5E1;
+    display:flex; align-items:center; justify-content:center; margin-top:.1rem; background:#fff;
+    transition:border-color .15s, background .15s;
+  }
+  .opt-shell.is-selected .opt-check{ border-color:#2563EB; background:#2563EB; }
+
+  .navpill{
+    width:2.55rem; height:2.55rem; border-radius:.75rem; display:flex; align-items:center; justify-content:center;
+    font-weight:700; font-size:.85rem; border:1.6px solid #E2E8F0; background:#fff; color:#475569;
+    transition:all .12s; cursor:pointer;
+  }
+  .navpill:hover{ border-color:#93C5FD; }
+  .navpill.st-answered{ background:#2563EB; border-color:#2563EB; color:#fff; }
+  .navpill.st-flagged{ background:#FEF3C7; border-color:#F59E0B; color:#92400E; }
+  .navpill.st-active{ box-shadow:0 0 0 2.5px #2563EB, 0 0 0 5px #DBEAFE; }
+
+  .scrollbar-thin::-webkit-scrollbar{ width:7px; height:7px; }
+  .scrollbar-thin::-webkit-scrollbar-thumb{ background:#CBD5E1; border-radius:99px; }
+  .scrollbar-thin::-webkit-scrollbar-track{ background:transparent; }
+
+  @keyframes fadeUp{ from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:translateY(0);} }
+  .anim-fade-up{ animation: fadeUp .28s cubic-bezier(.2,.7,.3,1); }
+  @keyframes popIn{ from{opacity:0; transform:scale(.94);} to{opacity:1; transform:scale(1);} }
+  .anim-pop{ animation: popIn .18s cubic-bezier(.2,.7,.3,1); }
+
+  input[type=range].slider-blue{ -webkit-appearance:none; height:6px; border-radius:99px; background:#DBEAFE; }
+  input[type=range].slider-blue::-webkit-slider-thumb{
+    -webkit-appearance:none; width:20px; height:20px; border-radius:99px; background:#2563EB;
+    border:3px solid #fff; box-shadow:0 2px 8px rgba(37,99,235,.4); cursor:pointer; margin-top:-7px;
+  }
+  input[type=range].slider-blue::-moz-range-thumb{
+    width:20px; height:20px; border-radius:99px; background:#2563EB; border:3px solid #fff;
+    box-shadow:0 2px 8px rgba(37,99,235,.4); cursor:pointer;
+  }
+  input[type=range].slider-blue::-webkit-slider-runnable-track{ height:6px; border-radius:99px; }
+  input[type=range].slider-blue::-moz-range-track{ height:6px; border-radius:99px; background:#DBEAFE; }
+
+  .gauge-ring{ transition: stroke-dashoffset 1s cubic-bezier(.16,1,.3,1); }
+
+  @media print{ body{ background:#fff; } }
+  #print-report-portal{ position:absolute; top:0; left:0; width:0; height:0; overflow:hidden; z-index:-1; }
+  #print-report{ width:794px; background:#fff; }
+</style>
+</head>
+<body class="min-h-screen antialiased">
+<div id="app"></div>
+<script>
+const EXAM_DATA = [{"code":"PTKA26-01","level":"MOTS","type":"pg","elemen":"Barisan dan Deret","sub":"Deret Tak Hingga","ind":"Menentukan jumlah deret geometri tak hingga dari suatu barisan.","stem":"<p>Suku ke-$n$ dari suatu barisan didefinisikan oleh rumus $U_n=3\\cdot5^{-n}$. Jumlah tak hingga dari deret yang dibentuk oleh barisan ini adalah ....</p>","options":["$\\dfrac{3}{5}$","$\\dfrac{3}{4}$","$1$","$\\dfrac{5}{4}$","$\\dfrac{4}{3}$"],"answer":1,"explanation":"<p>Suku pertama: $a=U_1=3\\cdot5^{-1}=\\dfrac35$.</p><p>Suku kedua: $U_2=3\\cdot5^{-2}=\\dfrac{3}{25}$.</p><p>Rasio: $r=\\dfrac{U_2}{U_1}=\\dfrac{3/25}{3/5}=\\dfrac{3}{25}\\times\\dfrac53=\\dfrac15$.</p><p>Karena $|r|=\\dfrac15<1$, deret ini konvergen. Rumus jumlah tak hingga: $S_\\infty=\\dfrac{a}{1-r}$.</p>$$S_\\infty=\\dfrac{3/5}{1-1/5}=\\dfrac{3/5}{4/5}=\\dfrac34$$<p><b>Jawaban: 3/4 (B).</b></p>","no":1},{"code":"PTKA26-02","level":"MOTS","type":"pg","elemen":"Turunan","sub":"Garis Singgung dan Garis Normal","ind":"Menentukan persamaan garis normal suatu kurva di suatu titik.","stem":"<p>Persamaan garis normal pada kurva $f(x)=2x^3-4x^2+3x-1$ di titik yang berabsis $x=1$ adalah ....</p>","options":["$x+y-1=0$","$x-y+1=0$","$x+y+1=0$","$x-2y+1=0$","$2x+y-2=0$"],"answer":0,"explanation":"<p>Koordinat titik singgung: $f(1)=2(1)^3-4(1)^2+3(1)-1=2-4+3-1=0$, sehingga titiknya $(1,0)$.</p><p>Gradien garis singgung: $f'(x)=6x^2-8x+3$, sehingga $m_s=f'(1)=6-8+3=1$.</p><p>Garis normal tegak lurus garis singgung: $m_n=-\\dfrac{1}{m_s}=-1$.</p><p>Persamaan garis melalui $(1,0)$ dengan gradien $-1$:</p>$$y-0=-1(x-1)\\;\\Rightarrow\\;y=-x+1\\;\\Rightarrow\\;x+y-1=0$$<p><b>Jawaban: x + y − 1 = 0 (A).</b></p>","no":2},{"code":"PTKA26-05","level":"HOTS","type":"mcma","elemen":"Polinomial","sub":"Teorema Vieta","ind":"Menerapkan hubungan antar akar persamaan suku banyak (teorema Vieta).","stem":"<p>Akar-akar dari persamaan suku banyak $x^3+2x^2-13x+10=0$ adalah $p$, $q$, dan $r$. Manakah dari pernyataan-pernyataan berikut yang benar? Jawaban benar lebih dari satu.</p>","options":["$p+q+r=-2$","$pq+pr+qr=-13$","$pqr=-10$","Salah satu akarnya adalah 2.","Jumlah kuadrat akar-akarnya ($p^2+q^2+r^2$) adalah 30."],"answer":[0,1,2,3,4],"explanation":"<p>Untuk $ax^3+bx^2+cx+d=0$: $p+q+r=-\\dfrac ba$, $pq+pr+qr=\\dfrac ca$, $pqr=-\\dfrac da$. Di sini $a=1,b=2,c=-13,d=10$.</p><ol><li>$p+q+r=-\\dfrac21=-2$ &rarr; <b>Benar</b>.</li><li>$pq+pr+qr=\\dfrac{-13}{1}=-13$ &rarr; <b>Benar</b>.</li><li>$pqr=-\\dfrac{10}{1}=-10$ &rarr; <b>Benar</b>.</li><li>Substitusi $x=2$: $2^3+2(2^2)-13(2)+10=8+8-26+10=0$, sehingga $x=2$ adalah akar &rarr; <b>Benar</b>.</li><li>$p^2+q^2+r^2=(p+q+r)^2-2(pq+pr+qr)=(-2)^2-2(-13)=4+26=30$ &rarr; <b>Benar</b>.</li></ol><p><b>Jawaban: Pernyataan 1, 2, 3, 4, dan 5 semuanya benar.</b></p>","no":3},{"code":"PTKA26-07","level":"HOTS","type":"pg","elemen":"Fungsi","sub":"Fungsi Invers","ind":"Menentukan titik potong fungsi dan fungsi inversnya menggunakan sifat simetri terhadap garis y = x.","stem":"<p>Jika grafik fungsi $f(x)=x^2-8x+18$ dengan domain $x\\ge4$ berpotongan dengan grafik fungsi inversnya, $f^{-1}(x)$, di titik $(a,b)$ maka nilai dari $a\\cdot b$ adalah ....</p>","options":["$9$","$12$","$18$","$25$","$36$"],"answer":4,"explanation":"<p>Grafik fungsi dan inversnya selalu simetris terhadap garis $y=x$, sehingga titik potongnya (jika ada) pasti terletak pada garis $y=x$, yakni memenuhi $f(x)=x$:</p>$$x^2-8x+18=x\\;\\Rightarrow\\;x^2-9x+18=0\\;\\Rightarrow\\;(x-3)(x-6)=0\\;\\Rightarrow\\;x=3\\text{ atau }x=6$$<p>Domain yang diberikan $x\\ge4$, maka hanya $x=6$ yang memenuhi. Karena titik berada pada $y=x$, maka $a=b=6$.</p>$$a\\cdot b=6\\times6=36$$<p><b>Jawaban: 36 (E).</b></p>","no":4},{"code":"PTKA26-08","level":"HOTS","type":"kat","elemen":"Trigonometri","sub":"Jumlah Dua Sudut","ind":"Menerapkan rumus tangen jumlah dua sudut pada konteks segitiga.","stem":"<p>Dalam sebuah segitiga lancip $ABC$, diketahui bahwa $\\tan A$ dan $\\tan B$ adalah akar-akar dari persamaan kuadrat $2x^2-8x+3=0$. Tentukan <b>Benar</b> atau <b>Salah</b> untuk setiap pernyataan berikut!</p>","statements":["Nilai dari $\\tan(A+B)$ adalah $-8$.","Nilai dari $\\tan C$ adalah $8$.","Segitiga $ABC$ adalah segitiga siku-siku."],"answer":["B","B","S"],"explanation":"<p>Dari $2x^2-8x+3=0$: jumlah akar $\\tan A+\\tan B=\\dfrac{8}{2}=4$; hasil kali akar $\\tan A\\tan B=\\dfrac32$.</p><p>Dalam segitiga, $A+B+C=180°\\Rightarrow A+B=180°-C$.</p><ol><li>$\\tan(A+B)=\\dfrac{\\tan A+\\tan B}{1-\\tan A\\tan B}=\\dfrac{4}{1-3/2}=\\dfrac{4}{-1/2}=-8$ &rarr; <b>Benar</b>.</li><li>Karena $\\tan(A+B)=\\tan(180°-C)=-\\tan C$, maka $-8=-\\tan C\\Rightarrow\\tan C=8$ &rarr; <b>Benar</b>.</li><li>Karena segitiga lancip, $\\tan A,\\tan B,\\tan C$ semuanya positif (termasuk $\\tan C=8$), sehingga $C$ bukan $90°$ — segitiga ini <b>bukan</b> siku-siku &rarr; <b>Salah</b>.</li></ol><p><b>Jawaban: Benar, Benar, Salah.</b></p>","no":5},{"code":"PTKA26-10","level":"HOTS","type":"mcma","elemen":"Logaritma","sub":"Pertidaksamaan Logaritma","ind":"Menyelesaikan pertidaksamaan logaritma berbasis pecahan dan menentukan himpunan bagian dari penyelesaiannya.","stem":"<p>Manakah dari interval-interval berikut yang merupakan himpunan bagian dari himpunan penyelesaian pertidaksamaan $\\left(\\log_{\\frac12}x\\right)^2+2\\log_{\\frac12}x-3\\ge0$? Jawaban benar lebih dari satu.</p>","options":["$\\left(0,\\dfrac18\\right]$","$[2,3)$","$(1,2]$","$\\left(0,\\dfrac14\\right)$","$[1,infty)$"],"answer":[0,3],"explanation":"<p>Syarat numerus: $x>0$. Misalkan $y=\\log_{\\frac12}x$. Pertidaksamaan menjadi:</p>$$y^2+2y-3\\ge0\\;\\Rightarrow\\;(y+3)(y-1)\\ge0\\;\\Rightarrow\\;y\\le-3\\text{ atau }y\\ge1$$<p><b>Kasus 1:</b> $\\log_{\\frac12}x\\le-3$. Karena basis $\\dfrac12$ (antara 0 dan 1), tanda pertidaksamaan dibalik saat diubah ke bentuk eksponensial: $x\\ge\\left(\\dfrac12\\right)^{-3}=8$.</p><p><b>Kasus 2:</b> $\\log_{\\frac12}x\\ge1$. Dibalik: $x\\le\\dfrac12$.</p><p>Gabungkan dengan domain $x>0$: himpunan penyelesaian $=\\left\\{x\\mid0<x\\le\\dfrac12\\text{ atau }x\\ge8\\right\\}=\\left(0,\\dfrac12\\right]\\cup[8,\\infty)$.</p><ol><li>$\\left(0,\\dfrac18\\right]\\subset\\left(0,\\dfrac12\\right]$ &rarr; <b>Benar</b> (subset).</li><li>$[2,3)$: tidak ada anggotanya yang memenuhi &rarr; <b>Salah</b>.</li><li>$(1,2]$: tidak ada anggotanya yang memenuhi &rarr; <b>Salah</b>.</li><li>$\\left(0,\\dfrac14\\right)\\subset\\left(0,\\dfrac12\\right]$ &rarr; <b>Benar</b> (subset).</li><li>$[1,\\infty)$: memuat nilai seperti $2,3,4,\\dots$ yang tidak memenuhi &rarr; <b>Salah</b>.</li></ol><p><b>Jawaban: Pernyataan 1 dan 4.</b></p>","no":6},{"code":"PTKA26-14","level":"HOTS","type":"pg","elemen":"Fungsi","sub":"Persamaan Fungsional","ind":"Menyelesaikan persamaan fungsional dengan metode substitusi dan eliminasi.","stem":"<p>Suatu fungsi $f$ didefinisikan untuk semua bilangan real $x\\ne0$ dan memenuhi persamaan fungsional:</p>$$f(x)+2f\\left(\\frac1x\\right)=3x$$<p>Nilai dari $f(2)$ adalah ....</p>","options":["$-1$","$\\dfrac12$","$1$","$\\dfrac32$","$25$"],"answer":0,"explanation":"<p>Persamaan awal: $f(x)+2f\\left(\\dfrac1x\\right)=3x$ ...(1)</p><p>Substitusi $x$ dengan $\\dfrac1x$: $f\\left(\\dfrac1x\\right)+2f(x)=\\dfrac3x$ ...(2)</p><p>Kalikan (2) dengan 2: $2f\\left(\\dfrac1x\\right)+4f(x)=\\dfrac6x$. Kurangkan (1): </p>$$3f(x)=\\frac6x-3x\\;\\Rightarrow\\;f(x)=\\frac2x-x$$<p>Maka $f(2)=\\dfrac22-2=1-2=-1$.</p><p><b>Jawaban: −1 (A).</b></p>","no":7},{"code":"PTKA26-15","level":"HOTS","type":"mcma","elemen":"Turunan","sub":"Analisis Grafik Turunan","ind":"Menginterpretasi grafik turunan pertama untuk menyimpulkan sifat fungsi asal (naik/turun, kecekungan, titik belok).","stem":"<p>Grafik dari fungsi $y=f'(x)$, turunan pertama dari sebuah fungsi $f(x)$. Grafik $f'(x)$ adalah sebuah parabola yang memotong sumbu-$x$ di $x=-1$ dan $x=3$, dan memiliki titik puncak di $(1,-4)$. Manakah dari pernyataan-pernyataan berikut yang benar mengenai fungsi asalnya, $f(x)$? Jawaban benar lebih dari satu.</p>","options":["Fungsi $f(x)$ mencapai nilai maksimum lokal di $x=-1$.","Fungsi $f(x)$ turun pada interval $(-1,3)$.","Fungsi $f(x)$ memiliki titik belok di $x=1$.","Fungsi $f(x)$ cekung ke atas pada interval $(1,\\infty)$.","Grafik $f(x)$ pasti memotong sumbu-$x$."],"answer":[0,1,2,3],"explanation":"<p>Karena parabola $f'(x)$ membuka ke atas (titik puncak adalah minimum) dengan akar $x=-1,3$: $f'(x)>0$ pada $(-\\infty,-1)\\cup(3,\\infty)$ (f naik), dan $f'(x)<0$ pada $(-1,3)$ (f turun).</p><p>$f'(x)$ sendiri turun pada $(-\\infty,1)$ dan naik pada $(1,\\infty)$, berarti $f''(x)<0$ pada $(-\\infty,1)$ (f cekung ke bawah) dan $f''(x)>0$ pada $(1,\\infty)$ (f cekung ke atas); $f''(1)=0$ menandakan titik belok di $x=1$.</p><ol><li>Di $x=-1$, $f'$ berubah dari $+$ ke $-$ (naik ke turun) — ciri maksimum lokal &rarr; <b>Benar</b>.</li><li>Pada $(-1,3)$, $f'(x)<0$, artinya $f$ turun &rarr; <b>Benar</b>.</li><li>Di $x=1$ kecekungan berubah &rarr; <b>Benar</b> (titik belok).</li><li>Pada $(1,\\infty)$, $f$ cekung ke atas &rarr; <b>Benar</b>.</li><li>Bentuk umum grafik (naik-turun-naik) tidak menjamin memotong sumbu-$x$ — nilai maks/min lokalnya bisa saja tetap negatif semua, sehingga grafik tidak pernah memotong sumbu-$x$ &rarr; <b>Salah</b>, tidak pasti.</li></ol><p><b>Jawaban: Pernyataan 1, 2, 3, dan 4.</b></p>","no":8},{"code":"PTKA26-16","level":"HOTS","type":"pg","elemen":"Integral","sub":"Aplikasi Integral (Kecepatan dan Jarak)","ind":"Menerapkan integral tentu untuk menghitung jarak tempuh dari fungsi kecepatan.","stem":"<p><i>Teks berikut untuk soal nomor 16&ndash;20.</i></p><p><b>Pembangunan \"Eco-Tower\", Gedung Perkantoran Cerdas</b></p><p>Sebuah perusahaan properti sedang membangun \"Eco-Tower\", sebuah gedung perkantoran 50 lantai yang dirancang untuk menjadi ikon arsitektur berkelanjutan.</p><p><b>Desain Atrium dan Lift Kaca:</b> Di tengah gedung terdapat atrium silinder raksasa yang membentang dari lantai dasar hingga puncak, dengan lift kaca panoramik. Kecepatan lift ($v$) saat naik dimodelkan sebagai fungsi waktu ($t$ dalam detik) oleh persamaan $v(t)=-0{,}1t^2+4t$. Lift ini memerlukan waktu 40 detik untuk mencapai puncak.</p><p>Berapakah ketinggian total atrium dari lantai dasar hingga puncak gedung, berdasarkan pergerakan lift kaca dari $t=0$ hingga $t=40$ detik?</p>","options":["$320$ meter","$373{,}33$ meter","$480$ meter","$1066{,}67$ meter","$3200$ meter"],"answer":3,"explanation":"<p>Jarak $(s)$ adalah integral dari kecepatan terhadap waktu:</p>$$s=\\int_0^{40}\\left(-0{,}1t^2+4t\\right)dt=\\left[-\\frac{0{,}1}{3}t^3+2t^2\\right]_0^{40}$$$$=-\\frac{0{,}1}{3}(64000)+2(1600)=-\\frac{6400}{3}+3200=-2133{,}33+3200\\approx1066{,}67$$<p><b>Jawaban: 1066,67 meter (D).</b></p>","no":9},{"code":"PTKA26-17","level":"HOTS","type":"pg","elemen":"Pengukuran","sub":"Luas Bangun Datar (Heksagon)","ind":"Menerapkan konsep luas untuk menghitung jumlah ubin yang dibutuhkan menutupi suatu area.","stem":"<p><b>Taman Gantung (Sky Garden):</b> Di lantai 25, akan dibangun sebuah taman gantung. Lantai taman akan ditutup dengan ubin berbentuk heksagon (segi enam beraturan) dengan panjang sisi 30 cm. Taman ini berbentuk persegi panjang dengan ukuran 20 meter kali 15 meter.</p><p>Berapa perkiraan jumlah ubin heksagon minimum yang dibutuhkan untuk menutupi seluruh lantai taman gantung? (Gunakan $\\sqrt3\\approx1{,}73$)</p>","options":["$1280$ ubin","$1285$ ubin","$1295$ ubin","$1350$ ubin","$1412$ ubin"],"answer":1,"explanation":"<p>Luas taman $=20\\text{ m}\\times15\\text{ m}=300\\text{ m}^2=3.000.000\\text{ cm}^2$.</p><p>Luas satu ubin heksagon beraturan sisi $s=30$ cm: $L=\\dfrac{3\\sqrt3}{2}s^2=\\dfrac{3\\sqrt3}{2}(900)=1350\\sqrt3\\approx1350(1{,}73)=2335{,}5\\text{ cm}^2$.</p><p>Jumlah ubin $=\\dfrac{3.000.000}{2335{,}5}\\approx1284{,}56$.</p><p>Karena tidak bisa membeli setengah ubin, dibulatkan ke atas menjadi <b>1285 ubin</b>.</p><p><b>Jawaban: 1285 ubin (B).</b></p>","no":10},{"code":"PTKA26-18","level":"HOTS","type":"kat","elemen":"Peluang","sub":"Peluang Kejadian Majemuk","ind":"Menerapkan aturan penjumlahan dan peluang bersyarat pada kejadian majemuk.","stem":"<p><b>Manajemen Energi dan Peluang:</b> Eco-Tower menggunakan panel surya dan turbin angin. Pada hari yang cerah, peluang panel surya berfungsi optimal adalah 95%. Pada hari yang berangin, peluang turbin angin berfungsi optimal adalah 90%. Peluang hari tersebut cerah sekaligus berangin (kedua sistem berfungsi optimal bersamaan) adalah 85%.</p><p>Berdasarkan data peluang cuaca dan fungsi sistem energi, tentukan <b>Benar</b> atau <b>Salah</b> untuk setiap pernyataan berikut!</p>","statements":["Peluang setidaknya salah satu sistem (panel surya atau turbin angin) berfungsi optimal adalah 1 (pasti terjadi).","Peluang panel surya tidak berfungsi optimal, sementara turbin angin berfungsi optimal, adalah 0,045.","Jika diketahui turbin angin sedang berfungsi optimal, peluang panel surya juga berfungsi optimal adalah $\\dfrac23$."],"answer":["B","B","S"],"explanation":"<p>Misalkan $C$ = panel surya optimal, $A$ = turbin angin optimal. Diketahui $P(C)=0{,}95$, $P(A)=0{,}90$, $P(C\\cap A)=0{,}85$.</p><ol><li>$P(C\\cup A)=P(C)+P(A)-P(C\\cap A)=0{,}95+0{,}90-0{,}85=1{,}00$ &rarr; <b>Benar</b> (pasti terjadi).</li><li>$P(C')=1-P(C)=0{,}05$. Peluang panel surya tidak optimal namun turbin optimal $=0{,}05\\times0{,}90=0{,}045$ &rarr; <b>Benar</b>.</li><li>$P(C\\mid A)=\\dfrac{P(C\\cap A)}{P(A)}=\\dfrac{0{,}85}{0{,}90}=\\dfrac{17}{18}$, bukan $\\dfrac23$ &rarr; <b>Salah</b>.</li></ol><p><b>Jawaban: Benar, Benar, Salah.</b></p>","no":11},{"code":"PTKA26-19","level":"HOTS","type":"kat","elemen":"Trigonometri","sub":"Aturan Kosinus dan Luas Segitiga","ind":"Menerapkan aturan kosinus, rumus luas, dan aturan sinus pada segitiga.","stem":"<p><b>Misi Eksplorasi Robotik:</b> Dalam sebuah pemetaan area, ditemukan tiga titik penting $A$, $B$, dan $C$ yang membentuk segitiga. Jarak $AB=12$ km, jarak $BC=14$ km, dan sudut $\\angle ABC=60°$. Tentukan <b>Benar</b> atau <b>Salah</b> untuk setiap pernyataan berikut!</p>","statements":["Jarak antara titik $A$ dan $C$ adalah $2\\sqrt{31}$ km.","Luas area segitiga $ABC$ adalah $42sqrt3$ km².","Nilai sinus sudut $BCA$ adalah $\\dfrac{3\\sqrt{93}}{31}$."],"answer":["S","B","S"],"explanation":"<p>Aturan kosinus: $AC^2=AB^2+BC^2-2\\cdot AB\\cdot BC\\cdot\\cos60°=12^2+14^2-2(12)(14)\\left(\\frac12\\right)=144+196-168=172$.</p><p>$AC=\\sqrt{172}=2\\sqrt{43}$ km, <b>bukan</b> $2\\sqrt{31}$ &rarr; pernyataan 1 <b>Salah</b>.</p><p>Luas $=\\dfrac12\\cdot AB\\cdot BC\\cdot\\sin60°=\\dfrac12(12)(14)\\left(\\dfrac{\\sqrt3}{2}\\right)=84\\cdot\\dfrac{\\sqrt3}{2}=42\\sqrt3$ km² &rarr; pernyataan 2 <b>Benar</b>.</p><p>Aturan sinus: $\\dfrac{AB}{\\sin C}=\\dfrac{AC}{\\sin B}\\Rightarrow\\sin C=\\dfrac{AB\\sin B}{AC}=\\dfrac{12\\left(\\frac{\\sqrt3}{2}\\right)}{2\\sqrt{43}}=\\dfrac{6\\sqrt3}{2\\sqrt{43}}=\\dfrac{3\\sqrt3}{\\sqrt{43}}=\\dfrac{3\\sqrt{129}}{43}$, <b>bukan</b> $\\dfrac{3\\sqrt{93}}{31}$ &rarr; pernyataan 3 <b>Salah</b>.</p><p><b>Jawaban: Salah, Benar, Salah.</b></p>","no":12},{"code":"PTKA26-20","level":"HOTS","type":"mcma","elemen":"Kombinatorika","sub":"Aturan Perkalian dan Peluang","ind":"Menerapkan aturan perkalian pada penyusunan dengan syarat berselang-seling.","stem":"<p><b>Tim Keamanan Siber:</b> Untuk melindungi sistem manajemen gedung, dibentuk sebuah tim keamanan siber. Tim ini memerlukan sebuah kata sandi akses utama yang terdiri dari 5 digit. Kata sandi ini harus dibentuk dari angka-angka $\\{1,2,3,4,5,6\\}$ dengan syarat angka-angka ganjil dan genap harus muncul secara berselang-seling dan tidak boleh ada angka yang berulang.</p><p>Manakah dari pernyataan berikut yang benar? Jawaban benar lebih dari satu.</p>","options":["Jika kata sandi diawali dengan angka ganjil, terdapat 36 kemungkinan.","Total kemungkinan kata sandi yang bisa dibentuk adalah 72.","Peluang kata sandi diawali dengan angka 1 dan diakhiri dengan angka 2 adalah $\\dfrac{1}{36}$.","Jika kata sandi harus kurang dari 30.000, terdapat 24 kemungkinan.","Terdapat lebih banyak kata sandi yang diawali angka ganjil daripada yang diawali angka genap."],"answer":[0,1,3],"explanation":"<p>Angka ganjil: $\\{1,3,5\\}$ (3 angka). Angka genap: $\\{2,4,6\\}$ (3 angka).</p><ol><li>Diawali ganjil, pola Ganjil-Genap-Ganjil-Genap-Ganjil: $3\\times3\\times2\\times2\\times1=36$ &rarr; <b>Benar</b>.</li><li>Dua pola berselang-seling mungkin (diawali ganjil atau diawali genap), masing-masing 36 cara: total $36+36=72$ &rarr; <b>Benar</b>.</li><li>Pola harus berselang-seling penuh; kata sandi diawali ganjil (1) mengikuti pola G-Gn-G-Gn-G yang berakhir ganjil, sehingga <b>tidak mungkin</b> berakhir dengan angka genap (2). Peluangnya $0$, bukan $\\dfrac1{36}$ &rarr; <b>Salah</b>.</li><li>Kurang dari 30.000 berarti digit pertama $1$ atau $2$: diawali $1$ (pola G-Gn-G-Gn-G) $=1\\times3\\times2\\times2\\times1=12$; diawali $2$ (pola Gn-G-Gn-G-Gn)$=1\\times3\\times2\\times2\\times1=12$. Total $=12+12=24$ &rarr; <b>Benar</b>.</li><li>Kata sandi diawali ganjil $=36$ dan diawali genap $=36$ — jumlahnya <b>sama</b>, bukan lebih banyak &rarr; <b>Salah</b>.</li></ol><p><b>Jawaban: Pernyataan 1, 2, dan 4.</b></p>","no":13},{"code":"PTKA26-21","level":"HOTS","type":"pg","elemen":"Pengukuran","sub":"Optimasi Bangun Ruang","ind":"Menerapkan hubungan luas permukaan dan volume bangun ruang (setengah bola) untuk optimasi.","stem":"<p><i>Teks berikut untuk soal nomor 21&ndash;25.</i></p><p><b>Proyek \"Bio-Sphere Atlantis\" &ndash; Ekosistem Bawah Laut</b></p><p>Sebuah tim ilmuwan kelautan sedang mengembangkan \"Bio-Sphere Atlantis\", sebuah kubah observasi dan penelitian bawah laut yang sepenuhnya mandiri.</p><p><b>Desain Kubah Observasi:</b> Kubah utama berbentuk setengah bola. Luas permukaan kubah (tanpa lantai) diberikan oleh rumus $A=2\\pi r^2$ dan volumenya $V=\\dfrac23\\pi r^3$.</p><p>Jika anggaran proyek membatasi total luas permukaan kerangka kubah (tanpa lantai) menjadi $72\\pi$ meter persegi, berapakah volume internal maksimum yang dapat dicapai oleh kubah \"Bio-Sphere Atlantis\"?</p>","options":["$72\\pi\\text{ m}^3$","$108\\pi\\text{ m}^3$","$144\\pi\\text{ m}^3$","$216\\pi\\text{ m}^3$","$288\\pi\\text{ m}^3$"],"answer":2,"explanation":"<p>$A=2\\pi r^2=72\\pi\\;\\Rightarrow\\;r^2=36\\;\\Rightarrow\\;r=6$ meter.</p>$$V=\\frac23\\pi r^3=\\frac23\\pi(6)^3=\\frac23\\pi(216)=144\\pi\\text{ m}^3$$<p><b>Jawaban: 144π m³ (C).</b></p>","no":14},{"code":"PTKA26-22","level":"MOTS","type":"pg","elemen":"Trigonometri","sub":"Fungsi Periodik","ind":"Menentukan nilai minimum pertama dari fungsi trigonometri periodik.","stem":"<p><b>Sistem Sirkulasi Oksigen:</b> Tingkat oksigen di dalam kubah ($O_2$) harus dijaga pada level 21%. Tingkat oksigen pada jam ke-$t$ setelah reset sistem dimodelkan oleh fungsi $L(t)=21+0{,}5\\cos\\left(\\dfrac{\\pi}{6}t\\right)$, di mana $t$ dalam jam.</p><p>Kapan pertama kali setelah sistem di-reset ($t=0$), tingkat oksigen di dalam kubah mencapai level minimumnya?</p>","options":["$3$ jam","$4$ jam","$6$ jam","$9$ jam","$12$ jam"],"answer":2,"explanation":"<p>$L(t)$ minimum ketika $\\cos\\left(\\dfrac{\\pi}{6}t\\right)$ minimum, yaitu $=-1$, pertama kali terjadi saat $\\dfrac{\\pi}{6}t=\\pi$.</p>$$t=6$$<p><b>Jawaban: 6 jam (C).</b></p>","no":15},{"code":"PTKA26-23","level":"HOTS","type":"kat","elemen":"Trigonometri","sub":"Aturan Kosinus dan Luas Segitiga","ind":"Menerapkan aturan kosinus, rumus luas, dan aturan sinus pada segitiga dengan sudut tumpul.","stem":"<p><b>Misi Eksplorasi Robotik:</b> Sebuah robot penyelam (ROV) menjelajahi area berbentuk segitiga di dasar laut dengan titik sudut $A$, $B$, dan $C$. Dari pusat kendali di kubah (titik $P$), jarak ke titik $A$ adalah 100 m, ke titik $B$ adalah 120 m, dan sudut $\\angle APB=150°$.</p><p>Berdasarkan data posisi ROV dari pusat kendali (titik $P$), tentukan <b>Benar</b> atau <b>Salah</b> untuk setiap pernyataan berikut!</p>","statements":["Jarak antara titik $A$ dan $B$ adalah $\\sqrt{26800}$.","Luas area segitiga $PAB$ adalah $3000$ m².","Nilai sinus sudut $PAB$ adalah $\\dfrac{6}{\\sqrt{67}}$."],"answer":["S","B","S"],"explanation":"<p>Aturan kosinus: $AB^2=PA^2+PB^2-2\\cdot PA\\cdot PB\\cdot\\cos150°$. Karena $\\cos150°=-\\dfrac{\\sqrt3}{2}$:</p>$$AB^2=100^2+120^2-2(100)(120)\\left(-\\frac{\\sqrt3}{2}\\right)=10000+14400+12000\\sqrt3=24400+12000\\sqrt3$$<p>Ini <b>bukan</b> $26800$ &rarr; pernyataan 1 <b>Salah</b>.</p><p>Luas $=\\dfrac12\\cdot PA\\cdot PB\\cdot\\sin150°=\\dfrac12(100)(120)\\left(\\dfrac12\\right)=3000$ m² &rarr; pernyataan 2 <b>Benar</b>.</p><p>Aturan sinus: $\\dfrac{PB}{\\sin(\\angle PAB)}=\\dfrac{AB}{\\sin150°}\\Rightarrow\\sin(\\angle PAB)=\\dfrac{PB\\sin150°}{AB}=\\dfrac{120\\left(\\frac12\\right)}{\\sqrt{24400+12000\\sqrt3}}=\\dfrac{60}{\\sqrt{24400+12000\\sqrt3}}$, nilai ini <b>tidak sama</b> dengan $\\dfrac{6}{\\sqrt{67}}$ &rarr; pernyataan 3 <b>Salah</b>.</p><p><b>Jawaban: Salah, Benar, Salah.</b></p>","no":16},{"code":"PTKA26-24","level":"MOTS","type":"kat","elemen":"Himpunan","sub":"Himpunan dan Peluang","ind":"Menerapkan prinsip inklusi-eksklusi pada himpunan untuk menentukan peluang.","stem":"<p><b>Analisis Sampel Biologis:</b> Tim biologi mengumpulkan sampel mikroorganisme. Dari 12 sampel yang diambil dari ventilasi hidrotermal, 5 sampel mengandung bakteri tipe A, 6 sampel mengandung bakteri tipe B, dan 2 sampel mengandung kedua tipe bakteri tersebut.</p><p>Berdasarkan hasil analisis 12 sampel biologis tersebut, tentukan <b>Benar</b> atau <b>Salah</b> untuk setiap pernyataan berikut!</p>","statements":["Terdapat 3 sampel yang hanya mengandung bakteri tipe A.","Total jumlah sampel yang mengandung setidaknya satu dari dua tipe bakteri tersebut adalah 9.","Peluang sebuah sampel yang dipilih secara acak tidak mengandung bakteri tipe A maupun tipe B adalah $\\dfrac14$."],"answer":["B","B","B"],"explanation":"<p>Total sampel $=12$; tipe $A=5$; tipe $B=6$; $A\\cap B=2$.</p><ol><li>Hanya tipe A $=n(A)-n(A\\cap B)=5-2=3$ &rarr; <b>Benar</b>.</li><li>$n(A\\cup B)=n(A)+n(B)-n(A\\cap B)=5+6-2=9$ &rarr; <b>Benar</b>.</li><li>Tidak mengandung keduanya $=12-9=3$. Peluang $=\\dfrac{3}{12}=\\dfrac14$ &rarr; <b>Benar</b>.</li></ol><p><b>Jawaban: Benar, Benar, Benar.</b></p>","no":17},{"code":"PTKA26-25","level":"HOTS","type":"mcma","elemen":"Kombinatorika","sub":"Kombinasi","ind":"Menerapkan konsep kombinasi dan aturan komplemen pada pembentukan tim dengan berbagai syarat.","stem":"<p><b>Pembentukan Tim Lapangan:</b> Dari 10 calon peneliti (6 ahli biologi dan 4 ahli geologi), akan dibentuk sebuah tim lapangan yang terdiri dari 5 orang. Manakah dari skenario pembentukan tim berikut yang memiliki lebih dari 50 kemungkinan formasi tim? Jawaban benar lebih dari satu.</p>","options":["Tim harus terdiri dari 3 ahli biologi dan 2 ahli geologi.","Tim harus memiliki tepat 1 ahli geologi.","Tim harus terdiri dari setidaknya 4 ahli biologi.","Tim tidak boleh hanya terdiri dari ahli biologi saja.","Seorang ahli biologi senior sudah pasti terpilih, sisanya dipilih secara bebas."],"answer":[0,1,2,3,4],"explanation":"<p>$C(n,r)$ menyatakan banyak kombinasi memilih $r$ dari $n$.</p><ol><li>$C(6,3)\\times C(4,2)=20\\times6=120>50$ &rarr; <b>Benar</b>.</li><li>$C(4,1)\\times C(6,4)=4\\times15=60>50$ &rarr; <b>Benar</b>.</li><li>Setidaknya 4 biologi $=C(6,4)C(4,1)+C(6,5)C(4,0)=(15\\times4)+(6\\times1)=60+6=66>50$ &rarr; <b>Benar</b>.</li><li>Komplemen (total $-$ semua biologi) $=C(10,5)-C(6,5)=252-6=246>50$ &rarr; <b>Benar</b>.</li><li>Satu orang pasti terpilih, sisanya $4$ dari $9$ calon: $C(9,4)=126>50$ &rarr; <b>Benar</b>.</li></ol><p><b>Jawaban: Semua pernyataan (1&ndash;5) benar.</b></p>","no":18}];
+</script>
+<script>
+/* ============================================================
+   Simulator Ujian & Evaluasi Interaktif — TKA Matematika 2026
+   ============================================================ */
+(function(){
+  "use strict";
+
+  const TOPIC_TITLE = "Matematika SMA/MA & SMK/MAK";
+  const N = EXAM_DATA.length;
+  const LEVEL_COUNTS = EXAM_DATA.reduce((a,q)=>{a[q.level]=(a[q.level]||0)+1; return a;},{});
+  const TYPE_LABELS = { pg:'Pilihan Ganda', kat:'PG Kompleks · Kategori', mcma:'PG Kompleks · MCMA' };
+  const TYPE_COUNTS = EXAM_DATA.reduce((a,q)=>{a[q.type]=(a[q.type]||0)+1; return a;},{});
+  const LETTERS = ['A','B','C','D','E','F'];
+
+  const state = {
+    screen: 'start',
+    identity: { name:'', kelas:'', sekolah:'' },
+    durationMin: 50,
+    timeLeftSec: 50*60,
+    timerId: null,
+    currentIndex: 0,
+    answers: {},        // no -> { pg: idx|null, mcma: Set, kat: [ 'B'|'S'|null, ... ] }
+    flagged: new Set(),
+    startedAt: null,
+    finishedAt: null,
+    confirmOpen: false,
+    reviewAll: false,
+    jumpMenuOpen: false,
+  };
+
+  EXAM_DATA.forEach(q=>{
+    if(q.type==='pg') state.answers[q.no] = { pg:null };
+    else if(q.type==='mcma') state.answers[q.no] = { mcma:new Set() };
+    else if(q.type==='kat') state.answers[q.no] = { kat: q.statements.map(()=>null) };
+  });
+
+  const $app = document.getElementById('app');
+
+  function esc(s){ return (s??'').toString().replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  function fmtTime(sec){
+    sec = Math.max(0, sec|0);
+    const m = Math.floor(sec/60), s = sec%60;
+    return String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+  }
+  function pad2(n){ return String(n).padStart(2,'0'); }
+  function fmtDateTime(d){
+    const bulan = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+    return `${pad2(d.getDate())} ${bulan[d.getMonth()]} ${d.getFullYear()}, ${pad2(d.getHours())}:${pad2(d.getMinutes())} WIB`;
+  }
+
+  function isAnswered(q){
+    const a = state.answers[q.no];
+    if(q.type==='pg') return a.pg !== null;
+    if(q.type==='mcma') return a.mcma.size > 0;
+    if(q.type==='kat') return a.kat.every(v=>v!==null);
+    return false;
+  }
+  function isCorrect(q){
+    const a = state.answers[q.no];
+    if(!isAnswered(q)) return false;
+    if(q.type==='pg') return a.pg === q.answer;
+    if(q.type==='mcma'){
+      const want = new Set(q.answer);
+      if(a.mcma.size !== want.size) return false;
+      for(const v of a.mcma) if(!want.has(v)) return false;
+      return true;
+    }
+    if(q.type==='kat') return a.kat.every((v,i)=>v===q.answer[i]);
+    return false;
+  }
+  function answeredCount(){ return EXAM_DATA.filter(isAnswered).length; }
+  function correctCount(){ return EXAM_DATA.filter(q=>isAnswered(q) && isCorrect(q)).length; }
+  function wrongCount(){ return EXAM_DATA.filter(q=>isAnswered(q) && !isCorrect(q)).length; }
+  function unansweredCount(){ return N - answeredCount(); }
+  function scorePct(){ return Math.round((correctCount()/N)*100); }
+
+  function renderMathIn(el){
+    if(window.renderMathInElement){
+      try{
+        renderMathInElement(el, {
+          delimiters: [
+            {left:'$$', right:'$$', display:true},
+            {left:'$', right:'$', display:false},
+          ],
+          throwOnError:false,
+        });
+      }catch(e){ /* noop */ }
+    }
+  }
+  function mountIcons(){
+    if(window.lucide && window.lucide.createIcons){
+      try{ window.lucide.createIcons(); }catch(e){}
+    }
+  }
+
+  function icon(name, cls){
+    return `<i data-lucide="${name}" class="${cls||''}"></i>`;
+  }
+
+  /* ---------------------------------------------------------- render dispatch */
+  function render(){
+    if(state.screen==='start') $app.innerHTML = renderStart();
+    else if(state.screen==='exam') $app.innerHTML = renderExam();
+    else if(state.screen==='result') $app.innerHTML = renderResult();
+    renderMathIn($app);
+    mountIcons();
+    bindEvents();
+    if(state.screen==='exam'){
+      const active = document.querySelector('.navpill.st-active');
+      if(active) active.scrollIntoView({block:'nearest', inline:'nearest'});
+    }
+  }
+
+  /* ============================================================ START SCREEN */
+  function renderStart(){
+    const estMin = N*2;
+    return `
+    <div class="min-h-screen flex items-center justify-center px-4 py-10 sm:py-14">
+      <div class="w-full max-w-3xl">
+        <div class="bg-white border border-slateink-200 rounded-3xl shadow-card overflow-hidden anim-fade-up">
+
+          <div class="relative px-7 sm:px-10 pt-9 pb-8 bg-navy-900 grid-texture overflow-hidden">
+            <div class="absolute -right-16 -top-20 w-64 h-64 rounded-full bg-brand-600/25 blur-3xl"></div>
+            <div class="absolute -left-10 -bottom-24 w-56 h-56 rounded-full bg-brand-500/20 blur-3xl"></div>
+            <div class="relative">
+              <span class="inline-flex items-center gap-1.5 text-[11px] font-semibold tracking-wide text-brand-100 bg-white/10 border border-white/15 rounded-full px-3 py-1">
+                ${icon('graduation-cap','w-3.5 h-3.5')} TRY OUT TKA
+              </span>
+              <h1 class="mt-4 text-white text-2xl sm:[2rem] sm:text-[1.9rem] font-extrabold leading-tight">
+                Simulator Ujian — ${TOPIC_TITLE}
+              </h1>
+              <p class="mt-2.5 text-slateink-300 text-[15px] leading-relaxed max-w-xl">
+                Latihan Tes Kemampuan Akademik dengan ${N} soal prediksi TKA Matematika &mdash; mencakup barisan &amp; deret,
+                kalkulus (turunan dan integral), matriks, trigonometri, vektor, logaritma, polinomial, kaidah pencacahan,
+                dan peluang &mdash; lengkap dengan pembahasan setiap nomor setelah ujian selesai.
+              </p>
+            </div>
+          </div>
+
+          <div class="px-7 sm:px-10 py-8 space-y-8">
+
+            <div>
+              <h2 class="text-sm font-bold text-navy-900 mb-3.5">Identitas peserta</h2>
+              <div class="grid sm:grid-cols-2 gap-3.5">
+                <label class="block sm:col-span-2">
+                  <span class="text-xs font-semibold text-slateink-600 mb-1.5 block">Nama lengkap <span class="text-bad-600">*</span></span>
+                  <input id="inp-name" type="text" placeholder="Tulis nama lengkapmu"
+                    value="${esc(state.identity.name)}"
+                    class="w-full rounded-xl border border-slateink-200 px-3.5 py-2.5 text-[15px] outline-none focus:border-brand-500 focus:ring-4 focus:ring-brand-100 transition"/>
+                </label>
+                <label class="block">
+                  <span class="text-xs font-semibold text-slateink-600 mb-1.5 block">Kelas <span class="text-bad-600">*</span></span>
+                  <input id="inp-kelas" type="text" placeholder="cth. XII IPA 3"
+                    value="${esc(state.identity.kelas)}"
+                    class="w-full rounded-xl border border-slateink-200 px-3.5 py-2.5 text-[15px] outline-none focus:border-brand-500 focus:ring-4 focus:ring-brand-100 transition"/>
+                </label>
+                <label class="block">
+                  <span class="text-xs font-semibold text-slateink-600 mb-1.5 block">Asal sekolah <span class="text-bad-600">*</span></span>
+                  <input id="inp-sekolah" type="text" placeholder="cth. SMA Negeri 1"
+                    value="${esc(state.identity.sekolah)}"
+                    class="w-full rounded-xl border border-slateink-200 px-3.5 py-2.5 text-[15px] outline-none focus:border-brand-500 focus:ring-4 focus:ring-brand-100 transition"/>
+                </label>
+              </div>
+              <p id="form-err" class="text-xs text-bad-600 font-medium mt-2 hidden">Lengkapi nama, kelas, dan asal sekolah terlebih dahulu.</p>
+            </div>
+
+            <div class="grid grid-cols-3 gap-3">
+              <div class="rounded-2xl border border-slateink-200 bg-slateink-50 px-4 py-3.5">
+                <p class="text-[11px] font-semibold text-slateink-500">Jumlah soal</p>
+                <p class="text-xl font-extrabold text-navy-900 mt-0.5 num-tab">${N}</p>
+              </div>
+              <div class="rounded-2xl border border-slateink-200 bg-slateink-50 px-4 py-3.5">
+                <p class="text-[11px] font-semibold text-slateink-500">Tingkat kesulitan</p>
+                <p class="text-[13px] font-bold text-navy-900 mt-1 leading-snug">${LEVEL_COUNTS.LOTS||0} LOTS · ${LEVEL_COUNTS.MOTS||0} MOTS · ${LEVEL_COUNTS.HOTS||0} HOTS</p>
+              </div>
+              <div class="rounded-2xl border border-slateink-200 bg-slateink-50 px-4 py-3.5">
+                <p class="text-[11px] font-semibold text-slateink-500">Tipe soal</p>
+                <p class="text-[13px] font-bold text-navy-900 mt-1 leading-snug">${TYPE_COUNTS.pg||0} PG · ${TYPE_COUNTS.mcma||0} Kompleks</p>
+              </div>
+            </div>
+
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-sm font-bold text-navy-900">Durasi ujian</span>
+                <span id="dur-label" class="text-sm font-extrabold text-brand-600 num-tab">${state.durationMin} menit</span>
+              </div>
+              <input id="dur-slider" type="range" min="15" max="90" step="5" value="${state.durationMin}" class="w-full slider-blue"/>
+              <div class="flex justify-between text-[11px] text-slateink-400 mt-1.5">
+                <span>15 menit</span>
+                <span>Estimasi ±2 menit/soal (~${estMin} menit)</span>
+                <span>90 menit</span>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="px-7 sm:px-10 pb-9">
+            <button id="btn-start" class="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-brand-600 hover:bg-brand-700 active:scale-[.99] text-white font-bold text-[15px] py-3.5 transition shadow-lg shadow-brand-600/25">
+              Mulai Ujian ${icon('arrow-right','w-4 h-4')}
+            </button>
+          </div>
+        </div>
+        <p class="text-center text-[12px] text-slateink-400 mt-5">Jawabanmu tersimpan otomatis selama sesi ujian berlangsung di perangkat ini.</p>
+      </div>
+    </div>`;
+  }
+
+  /* ============================================================= EXAM SCREEN */
+  function levelBadgeClasses(level){
+    if(level==='HOTS') return 'bg-bad-50 text-bad-700 border-bad-100';
+    if(level==='MOTS') return 'bg-warn-50 text-warn-700 border-warn-100';
+    return 'bg-good-50 text-good-700 border-good-100';
+  }
+
+  function renderQuestionBody(q){
+    let html = `<div class="prose-q math-block text-[15.5px] text-slateink-700">${q.stem||''}</div>`;
+    if(q.img_data){
+      html += `<figure class="my-4">
+        <img src="${q.img_data}" alt="${esc(q.alt||'Ilustrasi soal')}" class="mx-auto max-w-full rounded-xl border border-slateink-200 shadow-sm" loading="lazy"/>
+      </figure>`;
+    }
+    if(q.post){
+      html += `<div class="prose-q math-block text-[15.5px] text-slateink-700 mt-1">${q.post}</div>`;
+    }
+    return html;
+  }
+
+  function renderOptionsInput(q, mode){
+    // mode: 'exam' (interactive) — result screen uses a different renderer
+    const a = state.answers[q.no];
+    if(q.type==='pg'){
+      return `<div class="space-y-2.5 mt-5" data-opts>
+        ${q.options.map((opt,i)=>`
+          <label class="opt-shell ${a.pg===i?'is-selected':''}" data-pg-opt="${i}" data-qno="${q.no}">
+            <span class="opt-radio"><span class="opt-radio-dot"></span></span>
+            <span class="flex-1 text-[15px] leading-relaxed pt-0.5"><span class="font-bold text-slateink-500 mr-1.5">${LETTERS[i]}.</span>${opt}</span>
+          </label>`).join('')}
+      </div>`;
+    }
+    if(q.type==='mcma'){
+      return `<div class="mb-3 mt-5 text-xs font-semibold text-brand-700 bg-brand-50 border border-brand-100 rounded-lg px-3 py-2 inline-flex items-center gap-1.5">
+          ${icon('mouse-pointer-click','w-3.5 h-3.5')} Klik pada setiap jawaban benar. Jawaban benar bisa lebih dari satu.
+        </div>
+      <div class="space-y-2.5" data-opts>
+        ${q.options.map((opt,i)=>`
+          <label class="opt-shell ${a.mcma.has(i)?'is-selected':''}" data-mcma-opt="${i}" data-qno="${q.no}">
+            <span class="opt-check">${a.mcma.has(i)?icon('check','w-3.5 h-3.5 text-white'):''}</span>
+            <span class="flex-1 text-[15px] leading-relaxed pt-0.5"><span class="font-bold text-slateink-500 mr-1.5">${LETTERS[i]}.</span>${opt}</span>
+          </label>`).join('')}
+      </div>`;
+    }
+    if(q.type==='kat'){
+      return `<div class="mt-5 overflow-x-auto rounded-xl border border-slateink-200">
+        <table class="w-full text-sm">
+          <thead><tr class="bg-brand-50">
+            <th class="text-left font-bold text-brand-700 px-4 py-2.5">Pernyataan</th>
+            <th class="font-bold text-brand-700 px-4 py-2.5 w-24">Benar</th>
+            <th class="font-bold text-brand-700 px-4 py-2.5 w-24">Salah</th>
+          </tr></thead>
+          <tbody>
+          ${q.statements.map((st,i)=>`
+            <tr class="border-t border-slateink-200 bg-white">
+              <td class="px-4 py-3 text-[14.5px] leading-relaxed">${st}</td>
+              <td class="text-center px-2 py-3">
+                <button data-kat-opt="${i}" data-kat-val="B" data-qno="${q.no}"
+                  class="w-6 h-6 rounded-full border-2 ${a.kat[i]==='B' ? 'border-brand-600 bg-brand-600' : 'border-slateink-300 bg-white'} inline-flex items-center justify-center transition">
+                  ${a.kat[i]==='B' ? '<span class="w-2.5 h-2.5 rounded-full bg-white"></span>' : ''}
+                </button>
+              </td>
+              <td class="text-center px-2 py-3">
+                <button data-kat-opt="${i}" data-kat-val="S" data-qno="${q.no}"
+                  class="w-6 h-6 rounded-full border-2 ${a.kat[i]==='S' ? 'border-brand-600 bg-brand-600' : 'border-slateink-300 bg-white'} inline-flex items-center justify-center transition">
+                  ${a.kat[i]==='S' ? '<span class="w-2.5 h-2.5 rounded-full bg-white"></span>' : ''}
+                </button>
+              </td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>`;
+    }
+    return '';
+  }
+
+  function renderSidebar(){
+    return `
+    <aside class="hidden lg:flex flex-col w-[236px] shrink-0 bg-white border-r border-slateink-200 h-[calc(100vh-64px)] sticky top-16">
+      <div class="px-5 pt-5 pb-4 border-b border-slateink-100">
+        <p class="text-xs font-bold text-slateink-500 mb-2.5">Keterangan</p>
+        <div class="space-y-1.5 text-[12.5px] text-slateink-600">
+          <div class="flex items-center gap-2"><span class="w-3.5 h-3.5 rounded-[5px] border-[1.6px] border-slateink-200 bg-white"></span>Belum dijawab</div>
+          <div class="flex items-center gap-2"><span class="w-3.5 h-3.5 rounded-[5px] bg-brand-600"></span>Terjawab</div>
+          <div class="flex items-center gap-2"><span class="w-3.5 h-3.5 rounded-[5px] bg-warn-100 border-[1.6px] border-warn-600"></span>Ditandai ragu-ragu</div>
+          <div class="flex items-center gap-2"><span class="w-3.5 h-3.5 rounded-[5px] border-[1.6px] border-white" style="box-shadow:0 0 0 2px #2563EB"></span>Soal aktif</div>
+        </div>
+      </div>
+      <div class="flex-1 overflow-y-auto scrollbar-thin px-5 py-4">
+        <div class="grid grid-cols-4 gap-2">
+          ${EXAM_DATA.map((q,i)=>{
+            let cls = '';
+            if(state.flagged.has(q.no)) cls='st-flagged'; else if(isAnswered(q)) cls='st-answered';
+            if(i===state.currentIndex) cls += ' st-active';
+            return `<button data-jump="${i}" class="navpill ${cls}">${q.no}</button>`;
+          }).join('')}
+        </div>
+      </div>
+      <div class="px-5 py-4 border-t border-slateink-100">
+        <div class="text-[12px] text-slateink-500 mb-1.5">Progres jawaban</div>
+        <div class="text-sm font-extrabold text-navy-900 mb-2">${answeredCount()}/${N} dijawab</div>
+        <div class="h-2 rounded-full bg-slateink-100 overflow-hidden">
+          <div class="h-full bg-brand-600 rounded-full transition-all" style="width:${Math.round(answeredCount()/N*100)}%"></div>
+        </div>
+      </div>
+    </aside>`;
+  }
+
+  function renderExam(){
+    const q = EXAM_DATA[state.currentIndex];
+    const pct = Math.round((answeredCount()/N)*100);
+    const isFlagged = state.flagged.has(q.no);
+    return `
+    <div class="min-h-screen flex flex-col">
+
+      <header class="fixed top-0 inset-x-0 z-30 bg-white/95 backdrop-blur border-b border-slateink-200">
+        <div class="px-4 sm:px-6 h-16 flex items-center gap-4">
+          <button id="btn-mobile-nav" class="lg:hidden w-9 h-9 rounded-lg border border-slateink-200 inline-flex items-center justify-center shrink-0">
+            ${icon('layout-grid','w-4.5 h-4.5 text-slateink-600')}
+          </button>
+          <div class="min-w-0 flex-1">
+            <p class="text-[13px] sm:text-sm font-extrabold text-navy-900 truncate">Try Out TKA — ${TOPIC_TITLE}</p>
+            <div class="flex items-center gap-2.5 mt-1">
+              <div class="h-1.5 w-28 sm:w-40 rounded-full bg-slateink-100 overflow-hidden">
+                <div class="h-full bg-brand-600 rounded-full transition-all" style="width:${pct}%"></div>
+              </div>
+              <span class="text-[11px] font-bold text-slateink-500 num-tab">${pct}% &middot; ${answeredCount()}/${N} dijawab</span>
+            </div>
+          </div>
+          <div id="timer-pill" class="shrink-0 inline-flex items-center gap-1.5 rounded-full border-[1.6px] ${state.timeLeftSec<=300?'border-bad-600 text-bad-700 bg-bad-50':'border-brand-600 text-brand-700 bg-brand-50'} px-3.5 py-1.5 font-extrabold text-sm num-tab">
+            ${icon('timer','w-4 h-4')} <span id="timer-text">${fmtTime(state.timeLeftSec)}</span>
+          </div>
+        </div>
+      </header>
+
+      <div class="flex flex-1 pt-16">
+        ${renderSidebar()}
+
+        <main class="flex-1 min-w-0 px-4 sm:px-8 py-6 sm:py-8 max-w-3xl mx-auto w-full">
+          <div class="anim-fade-up" key="${q.no}">
+            <div class="flex flex-wrap items-center gap-2 mb-4">
+              <span class="text-xs font-extrabold text-brand-700 bg-brand-50 border border-brand-100 rounded-lg px-2.5 py-1">SOAL ${q.no} / ${N}</span>
+              <span class="text-[11px] font-bold border rounded-lg px-2.5 py-1 ${levelBadgeClasses(q.level)}">${q.level}</span>
+              <span class="text-[11px] font-bold border border-slateink-200 text-slateink-600 bg-slateink-50 rounded-lg px-2.5 py-1">${TYPE_LABELS[q.type]}</span>
+              <button id="btn-flag" data-qno="${q.no}" class="ml-auto text-xs font-bold rounded-lg px-3 py-1.5 border transition inline-flex items-center gap-1.5
+                ${isFlagged ? 'bg-warn-100 border-warn-600 text-warn-700' : 'bg-white border-slateink-200 text-slateink-600 hover:border-warn-400'}">
+                ${icon('flag','w-3.5 h-3.5')} ${isFlagged?'Ditandai':'Tandai ragu-ragu'}
+              </button>
+            </div>
+
+            <div class="bg-white border border-slateink-200 rounded-2xl shadow-card p-5 sm:p-7">
+              ${renderQuestionBody(q)}
+              ${renderOptionsInput(q, 'exam')}
+            </div>
+          </div>
+        </main>
+      </div>
+
+      <div class="fixed bottom-0 inset-x-0 z-30 bg-white/95 backdrop-blur border-t border-slateink-200">
+        <div class="max-w-3xl mx-auto lg:ml-[calc(236px+((100vw-236px)/2-378px))] px-4 sm:px-8 h-[68px] flex items-center gap-3">
+          <button id="btn-prev" ${state.currentIndex===0?'disabled':''} class="inline-flex items-center gap-1.5 rounded-xl border border-slateink-200 px-4 py-2.5 text-sm font-bold text-slateink-700 disabled:opacity-40 disabled:cursor-not-allowed hover:border-brand-400 transition">
+            ${icon('arrow-left','w-4 h-4')} <span class="hidden sm:inline">Sebelumnya</span>
+          </button>
+          <button id="btn-next" ${state.currentIndex===N-1?'disabled':''} class="inline-flex items-center gap-1.5 rounded-xl border border-slateink-200 px-4 py-2.5 text-sm font-bold text-slateink-700 disabled:opacity-40 disabled:cursor-not-allowed hover:border-brand-400 transition">
+            <span class="hidden sm:inline">Berikutnya</span> ${icon('arrow-right','w-4 h-4')}
+          </button>
+          ${state.currentIndex===N-1 ? `
+          <button id="btn-finish" ${answeredCount()<=10?'disabled':''} title="${answeredCount()<=10?'Jawab lebih dari 10 soal untuk mengaktifkan tombol ini':''}" class="ml-auto inline-flex items-center gap-1.5 rounded-xl bg-good-600 hover:bg-good-700 text-white px-5 py-2.5 text-sm font-extrabold transition shadow-md shadow-good-600/25 disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none disabled:hover:bg-good-600">
+            ${icon('check-circle-2','w-4.5 h-4.5')} Selesaikan Ujian
+          </button>` : `
+          <span class="ml-auto text-xs font-semibold text-slateink-400">Tombol selesai tersedia di soal terakhir</span>`}
+        </div>
+      </div>
+    </div>
+
+    ${state.jumpMenuOpen ? renderMobileJump() : ''}
+    ${state.confirmOpen ? renderConfirmModal() : ''}
+    `;
+  }
+
+  function renderMobileJump(){
+    return `
+    <div id="mobile-jump-overlay" class="fixed inset-0 z-40 bg-navy-950/50 flex items-end lg:hidden">
+      <div class="anim-pop w-full bg-white rounded-t-3xl max-h-[78vh] flex flex-col">
+        <div class="px-5 pt-4 pb-3 border-b border-slateink-100 flex items-center justify-between">
+          <p class="font-extrabold text-navy-900">Navigasi Soal</p>
+          <button id="btn-close-jump" class="w-8 h-8 rounded-full bg-slateink-100 inline-flex items-center justify-center">${icon('x','w-4 h-4')}</button>
+        </div>
+        <div class="px-5 py-3 flex gap-4 text-[11.5px] text-slateink-600 flex-wrap border-b border-slateink-100">
+          <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded border border-slateink-200 bg-white"></span>Belum</div>
+          <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-brand-600"></span>Terjawab</div>
+          <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-warn-100 border border-warn-600"></span>Ragu-ragu</div>
+        </div>
+        <div class="overflow-y-auto scrollbar-thin px-5 py-4">
+          <div class="grid grid-cols-6 gap-2">
+            ${EXAM_DATA.map((q,i)=>{
+              let cls = '';
+              if(state.flagged.has(q.no)) cls='st-flagged'; else if(isAnswered(q)) cls='st-answered';
+              if(i===state.currentIndex) cls += ' st-active';
+              return `<button data-jump="${i}" class="navpill ${cls}">${q.no}</button>`;
+            }).join('')}
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  function renderConfirmModal(){
+    const un = unansweredCount();
+    return `
+    <div id="confirm-overlay" class="fixed inset-0 z-50 bg-navy-950/55 flex items-center justify-center px-4">
+      <div class="anim-pop bg-white rounded-3xl shadow-pop max-w-md w-full p-7 text-center">
+        <div class="w-14 h-14 rounded-2xl bg-warn-50 border border-warn-100 text-warn-600 mx-auto flex items-center justify-center mb-4">
+          ${icon('alert-triangle','w-6 h-6')}
+        </div>
+        <h3 class="text-lg font-extrabold text-navy-900">Selesaikan Ujian?</h3>
+        <p class="text-sm text-slateink-600 mt-2 leading-relaxed">
+          ${un>0 ? `Kamu masih memiliki <span class="font-extrabold text-bad-600">${un} soal</span> yang belum dijawab.<br>` : ''}
+          Yakin ingin menyelesaikan ujian sekarang?
+        </p>
+        <div class="grid grid-cols-2 gap-3 mt-6">
+          <button id="btn-cancel-finish" class="rounded-xl border border-slateink-200 py-2.5 font-bold text-sm text-slateink-700 hover:bg-slateink-50 transition">Kembali</button>
+          <button id="btn-confirm-finish" class="rounded-xl bg-bad-600 hover:bg-bad-700 py-2.5 font-bold text-sm text-white transition">Ya, Selesaikan</button>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  /* ============================================================ RESULT SCREEN */
+  function renderGauge(pct){
+    const r = 66, C = 2*Math.PI*r;
+    const off = C - (pct/100)*C;
+    const color = pct>=75 ? '#16A34A' : pct>=50 ? '#2563EB' : '#DC2626';
+    return `
+    <svg viewBox="0 0 160 160" class="w-40 h-40 sm:w-44 sm:h-44">
+      <circle cx="80" cy="80" r="${r}" fill="none" stroke="#EEF2F8" stroke-width="14"/>
+      <circle cx="80" cy="80" r="${r}" fill="none" stroke="${color}" stroke-width="14" stroke-linecap="round"
+        stroke-dasharray="${C}" stroke-dashoffset="${off}" transform="rotate(-90 80 80)" class="gauge-ring"/>
+      <text x="80" y="76" text-anchor="middle" font-size="34" font-weight="800" fill="#0F172A" font-family="Plus Jakarta Sans, sans-serif">${pct}</text>
+      <text x="80" y="98" text-anchor="middle" font-size="13" font-weight="700" fill="#64748B" font-family="Plus Jakarta Sans, sans-serif">dari 100</text>
+    </svg>`;
+  }
+
+  function statusOf(q){
+    if(!isAnswered(q)) return 'unanswered';
+    return isCorrect(q) ? 'correct' : 'incorrect';
+  }
+  function statusMeta(status){
+    if(status==='correct') return {label:'Benar', cls:'bg-good-50 text-good-700 border-good-100', dot:'bg-good-600', ic:'check-circle-2'};
+    if(status==='incorrect') return {label:'Salah', cls:'bg-bad-50 text-bad-700 border-bad-100', dot:'bg-bad-600', ic:'x-circle'};
+    return {label:'Tidak Dijawab', cls:'bg-warn-50 text-warn-700 border-warn-100', dot:'bg-warn-600', ic:'circle-dashed'};
+  }
+
+  function renderAnswerRecap(q){
+    const a = state.answers[q.no];
+    if(q.type==='pg'){
+      return `<div class="space-y-2 mt-4">
+        ${q.options.map((opt,i)=>{
+          const picked = a.pg===i, correct = q.answer===i;
+          let cls = 'opt-shell !cursor-default';
+          if(correct) cls += ' is-correct'; else if(picked && !correct) cls += ' is-incorrect';
+          return `<div class="${cls}">
+            <span class="opt-radio ${correct?'!border-good-600':(picked?'!border-bad-600':'')}"><span class="opt-radio-dot" style="${(correct||picked)?'opacity:1;transform:scale(1);background:'+(correct?'#16A34A':'#DC2626'):''}"></span></span>
+            <span class="flex-1 text-[14.5px] leading-relaxed pt-0.5 flex items-center gap-2 flex-wrap">
+              <span><span class="font-bold text-slateink-500 mr-1">${LETTERS[i]}.</span>${opt}</span>
+              ${correct?'<span class="text-[11px] font-extrabold text-good-700 bg-good-100 rounded px-1.5 py-0.5">&check; kunci</span>':''}
+              ${(picked && !correct)?'<span class="text-[11px] font-extrabold text-bad-700 bg-bad-100 rounded px-1.5 py-0.5">Jawabanmu</span>':''}
+            </span>
+          </div>`;
+        }).join('')}
+      </div>`;
+    }
+    if(q.type==='mcma'){
+      const want = new Set(q.answer);
+      return `<div class="space-y-2 mt-4">
+        ${q.options.map((opt,i)=>{
+          const picked = a.mcma.has(i), correct = want.has(i);
+          let cls = 'opt-shell !cursor-default';
+          if(correct) cls += ' is-correct'; else if(picked && !correct) cls += ' is-incorrect';
+          return `<div class="${cls}">
+            <span class="opt-check ${correct?'!border-good-600 !bg-good-600':(picked?'!border-bad-600 !bg-bad-600':'')}">${(correct||picked)?icon('check','w-3.5 h-3.5 text-white'):''}</span>
+            <span class="flex-1 text-[14.5px] leading-relaxed pt-0.5 flex items-center gap-2 flex-wrap">
+              <span><span class="font-bold text-slateink-500 mr-1">${LETTERS[i]}.</span>${opt}</span>
+              ${correct?'<span class="text-[11px] font-extrabold text-good-700 bg-good-100 rounded px-1.5 py-0.5">&check; kunci</span>':''}
+              ${(picked && !correct)?'<span class="text-[11px] font-extrabold text-bad-700 bg-bad-100 rounded px-1.5 py-0.5">Jawabanmu</span>':''}
+            </span>
+          </div>`;
+        }).join('')}
+      </div>`;
+    }
+    if(q.type==='kat'){
+      return `<div class="mt-4 overflow-x-auto rounded-xl border border-slateink-200">
+        <table class="w-full text-sm">
+          <thead><tr class="bg-slateink-50">
+            <th class="text-left font-bold text-slateink-600 px-4 py-2.5">Pernyataan</th>
+            <th class="font-bold text-slateink-600 px-3 py-2.5 w-28">Jawabanmu</th>
+            <th class="font-bold text-slateink-600 px-3 py-2.5 w-24">Kunci</th>
+          </tr></thead>
+          <tbody>
+          ${q.statements.map((st,i)=>{
+            const picked = a.kat[i], correct = q.answer[i];
+            const ok = picked===correct;
+            return `<tr class="border-t border-slateink-200 bg-white">
+              <td class="px-4 py-3 text-[14px] leading-relaxed">${st}</td>
+              <td class="text-center px-2 py-3">
+                <span class="inline-flex items-center gap-1 text-xs font-extrabold rounded-full px-2.5 py-1 ${picked===null?'bg-slateink-100 text-slateink-500':(ok?'bg-good-100 text-good-700':'bg-bad-100 text-bad-700')}">
+                  ${picked===null?'—':(picked==='B'?'Benar':'Salah')}
+                </span>
+              </td>
+              <td class="text-center px-2 py-3">
+                <span class="inline-flex items-center gap-1 text-xs font-extrabold rounded-full px-2.5 py-1 bg-good-100 text-good-700">${correct==='B'?'Benar':'Salah'}</span>
+              </td>
+            </tr>`;
+          }).join('')}
+          </tbody>
+        </table>
+      </div>`;
+    }
+    return '';
+  }
+
+  function renderReviewCard(q, forceOpen){
+    const status = statusOf(q);
+    const meta = statusMeta(status);
+    const open = forceOpen || state.reviewAll;
+    return `
+    <div class="bg-white border border-slateink-200 rounded-2xl shadow-card overflow-hidden" id="review-${q.no}">
+      <button data-toggle-review="${q.no}" class="w-full flex items-center gap-3 px-5 py-4 text-left">
+        <span class="w-8 h-8 rounded-lg bg-slateink-50 border border-slateink-200 flex items-center justify-center text-[13px] font-extrabold text-slateink-600 shrink-0">${q.no}</span>
+        <span class="flex-1 min-w-0">
+          <span class="text-[13.5px] font-bold text-navy-900 truncate block">${q.elemen} &middot; ${q.sub}</span>
+          <span class="text-[11.5px] text-slateink-500">${q.level} &middot; ${TYPE_LABELS[q.type]}</span>
+        </span>
+        <span class="inline-flex items-center gap-1 text-[11.5px] font-extrabold rounded-full px-2.5 py-1 border ${meta.cls} shrink-0">
+          ${icon(meta.ic,'w-3.5 h-3.5')} ${meta.label}
+        </span>
+        <span class="shrink-0 text-slateink-400">${icon(open?'chevron-up':'chevron-down','w-4.5 h-4.5')}</span>
+      </button>
+      <div class="${open?'':'hidden'} px-5 pb-5 border-t border-slateink-100 pt-4" data-review-body>
+        ${renderQuestionBody(q)}
+        ${renderAnswerRecap(q)}
+        <div class="mt-4 rounded-xl border border-brand-100 bg-brand-50/60 p-4">
+          <p class="text-[11.5px] font-extrabold text-brand-700 uppercase tracking-wide mb-1.5 flex items-center gap-1.5">${icon('lightbulb','w-3.5 h-3.5')} Pembahasan</p>
+          <div class="prose-q math-block text-[14.5px] text-slateink-700">${q.explanation}</div>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  function renderResult(){
+    const pct = scorePct();
+    const correct = correctCount(), wrong = wrongCount(), un = unansweredCount();
+    const dt = state.finishedAt ? fmtDateTime(state.finishedAt) : '';
+    return `
+    <div class="min-h-screen px-4 sm:px-6 py-8 sm:py-12">
+      <div class="max-w-3xl mx-auto space-y-6">
+
+        <div id="result-summary-card" class="bg-white border border-slateink-200 rounded-3xl shadow-card overflow-hidden anim-fade-up">
+          <div class="px-6 sm:px-9 pt-8 pb-7 bg-navy-900 grid-texture relative overflow-hidden">
+            <div class="absolute -right-16 -top-20 w-64 h-64 rounded-full bg-brand-600/25 blur-3xl"></div>
+            <p class="relative text-[11px] font-bold tracking-wide text-brand-100 bg-white/10 border border-white/15 inline-block rounded-full px-3 py-1">HASIL UJIAN</p>
+            <h2 class="relative text-white text-xl sm:text-2xl font-extrabold mt-3">Ringkasan Evaluasi Kamu</h2>
+            <div class="relative grid sm:grid-cols-2 gap-4 mt-5 text-slateink-200 text-[13px]">
+              <div>
+                <p class="text-slateink-400 text-[11px] font-semibold">Nama Peserta</p>
+                <p class="font-bold text-white">${esc(state.identity.name)}</p>
+              </div>
+              <div>
+                <p class="text-slateink-400 text-[11px] font-semibold">Kelas / Asal Sekolah</p>
+                <p class="font-bold text-white">${esc(state.identity.kelas)} &middot; ${esc(state.identity.sekolah)}</p>
+              </div>
+              <div class="sm:col-span-2">
+                <p class="text-slateink-400 text-[11px] font-semibold">Waktu Pengerjaan Selesai</p>
+                <p class="font-bold text-white">${dt}</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="px-6 sm:px-9 py-8 flex flex-col sm:flex-row items-center gap-8">
+            <div class="shrink-0">${renderGauge(pct)}</div>
+            <div class="flex-1 w-full grid grid-cols-3 gap-3">
+              <div class="rounded-2xl bg-good-50 border border-good-100 px-3 py-3.5 text-center">
+                <p class="text-2xl font-extrabold text-good-700 num-tab">${correct}</p>
+                <p class="text-[11px] font-bold text-good-700 mt-0.5">Benar</p>
+              </div>
+              <div class="rounded-2xl bg-bad-50 border border-bad-100 px-3 py-3.5 text-center">
+                <p class="text-2xl font-extrabold text-bad-700 num-tab">${wrong}</p>
+                <p class="text-[11px] font-bold text-bad-700 mt-0.5">Salah</p>
+              </div>
+              <div class="rounded-2xl bg-warn-50 border border-warn-100 px-3 py-3.5 text-center">
+                <p class="text-2xl font-extrabold text-warn-700 num-tab">${un}</p>
+                <p class="text-[11px] font-bold text-warn-700 mt-0.5">Tidak Dijawab</p>
+              </div>
+              <div class="col-span-3 rounded-2xl bg-slateink-50 border border-slateink-200 px-4 py-3 flex items-center justify-between mt-1">
+                <span class="text-[13px] font-bold text-slateink-600">Skor Akhir</span>
+                <span class="text-lg font-extrabold text-navy-900 num-tab">${correct}/${N}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="px-6 sm:px-9 pb-8 grid sm:grid-cols-3 gap-3">
+            <button id="btn-restart" class="inline-flex items-center justify-center gap-1.5 rounded-xl border border-slateink-200 py-2.5 text-sm font-bold text-slateink-700 hover:bg-slateink-50 transition">
+              ${icon('rotate-ccw','w-4 h-4')} Ulangi Ujian
+            </button>
+            <button id="btn-open-all" class="inline-flex items-center justify-center gap-1.5 rounded-xl border border-brand-200 bg-brand-50 py-2.5 text-sm font-bold text-brand-700 hover:bg-brand-100 transition">
+              ${icon('book-open','w-4 h-4')} ${state.reviewAll?'Tutup Semua Pembahasan':'Buka Semua Pembahasan'}
+            </button>
+            <button id="btn-download-pdf" class="inline-flex items-center justify-center gap-1.5 rounded-xl bg-brand-600 hover:bg-brand-700 py-2.5 text-sm font-bold text-white transition shadow-md shadow-brand-600/25">
+              ${icon('download','w-4 h-4')} <span id="pdf-btn-label">Download Hasil (PDF)</span>
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="text-[15px] font-extrabold text-navy-900 mb-3 px-1">Daftar Evaluasi &amp; Pembahasan per Soal</h3>
+          <div class="space-y-3">
+            ${EXAM_DATA.map(q=>renderReviewCard(q,false)).join('')}
+          </div>
+        </div>
+
+        <p class="text-center text-[12px] text-slateink-400 pt-2 pb-6">Simulator Ujian TKA Matematika &middot; Dibuat untuk latihan mandiri.</p>
+      </div>
+    </div>`;
+  }
+
+  /* ============================================================ PDF EXPORT */
+  function buildPrintReport(){
+    const pct = scorePct(), correct = correctCount(), wrong = wrongCount(), un = unansweredCount();
+    const dt = state.finishedAt ? fmtDateTime(state.finishedAt) : '';
+    const rows = EXAM_DATA.map(q=>{
+      const status = statusOf(q);
+      const meta = statusMeta(status);
+      let answerHtml = '';
+      const a = state.answers[q.no];
+      if(q.type==='pg'){
+        answerHtml = `<p style="margin:2px 0"><b>Jawabanmu:</b> ${a.pg!==null? LETTERS[a.pg]+'. '+esc(stripTags(q.options[a.pg])) : '—'} &nbsp;|&nbsp; <b>Kunci:</b> ${LETTERS[q.answer]}. ${esc(stripTags(q.options[q.answer]))}</p>`;
+      } else if(q.type==='mcma'){
+        const picked = [...a.mcma].sort((x,y)=>x-y).map(i=>LETTERS[i]).join(', ') || '—';
+        const key = q.answer.slice().sort((x,y)=>x-y).map(i=>LETTERS[i]).join(', ');
+        answerHtml = `<p style="margin:2px 0"><b>Jawabanmu:</b> ${picked} &nbsp;|&nbsp; <b>Kunci:</b> ${key}</p>`;
+      } else if(q.type==='kat'){
+        answerHtml = q.statements.map((st,i)=>{
+          const picked = a.kat[i]===null?'—':(a.kat[i]==='B'?'Benar':'Salah');
+          const key = q.answer[i]==='B'?'Benar':'Salah';
+          return `<p style="margin:2px 0;font-size:11px">&bull; ${st} — <b>Jawabanmu:</b> ${picked}, <b>Kunci:</b> ${key}</p>`;
+        }).join('');
+      }
+      return `
+      <div style="break-inside:avoid;border:1px solid #E2E8F0;border-radius:10px;padding:14px 16px;margin-bottom:10px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+          <span style="font-weight:800;font-size:12.5px;color:#0F172A;">Soal ${q.no} &middot; ${esc(q.elemen)} / ${esc(q.sub)}</span>
+          <span style="font-weight:800;font-size:11px;padding:2px 8px;border-radius:999px;background:${status==='correct'?'#DCFCE7':status==='incorrect'?'#FEE2E2':'#FEF3C7'};color:${status==='correct'?'#15803D':status==='incorrect'?'#B91C1C':'#B45309'}">${meta.label}</span>
+        </div>
+        <div style="font-size:12.5px;color:#334155;line-height:1.6">${q.stem||''}${q.post||''}</div>
+        <div style="font-size:12px;color:#0F172A;margin-top:6px;background:#F8FAFC;border-radius:8px;padding:8px 10px;">${answerHtml}</div>
+        <div style="font-size:12px;color:#334155;margin-top:8px;border-top:1px dashed #CBD5E1;padding-top:8px;">
+          <b style="color:#1D4ED8;">Pembahasan:</b> ${q.explanation}
+        </div>
+      </div>`;
+    }).join('');
+
+    return `
+    <div style="font-family:'Plus Jakarta Sans',Arial,sans-serif;color:#0F172A;padding:36px 40px;">
+      <div style="border-bottom:3px solid #2563EB;padding-bottom:14px;margin-bottom:20px;">
+        <p style="font-size:11px;font-weight:800;letter-spacing:.06em;color:#2563EB;text-transform:uppercase;margin:0 0 4px;">Laporan Hasil Ujian</p>
+        <h1 style="font-size:19px;margin:0;font-weight:800;">Simulator Ujian — ${TOPIC_TITLE}</h1>
+      </div>
+      <table style="width:100%;font-size:12.5px;margin-bottom:18px;border-collapse:collapse;">
+        <tr><td style="padding:3px 0;color:#64748B;width:140px;">Nama Peserta</td><td style="padding:3px 0;font-weight:700;">${esc(state.identity.name)}</td></tr>
+        <tr><td style="padding:3px 0;color:#64748B;">Kelas</td><td style="padding:3px 0;font-weight:700;">${esc(state.identity.kelas)}</td></tr>
+        <tr><td style="padding:3px 0;color:#64748B;">Asal Sekolah</td><td style="padding:3px 0;font-weight:700;">${esc(state.identity.sekolah)}</td></tr>
+        <tr><td style="padding:3px 0;color:#64748B;">Waktu Selesai</td><td style="padding:3px 0;font-weight:700;">${dt}</td></tr>
+      </table>
+
+      <div style="display:flex;gap:10px;margin-bottom:22px;">
+        <div style="flex:1;background:#EFF5FF;border-radius:10px;padding:12px;text-align:center;">
+          <div style="font-size:20px;font-weight:800;color:#1D4ED8;">${pct}</div><div style="font-size:11px;color:#1D4ED8;font-weight:700;">Nilai Akhir</div>
+        </div>
+        <div style="flex:1;background:#F0FDF4;border-radius:10px;padding:12px;text-align:center;">
+          <div style="font-size:20px;font-weight:800;color:#15803D;">${correct}</div><div style="font-size:11px;color:#15803D;font-weight:700;">Benar</div>
+        </div>
+        <div style="flex:1;background:#FEF2F2;border-radius:10px;padding:12px;text-align:center;">
+          <div style="font-size:20px;font-weight:800;color:#B91C1C;">${wrong}</div><div style="font-size:11px;color:#B91C1C;font-weight:700;">Salah</div>
+        </div>
+        <div style="flex:1;background:#FFFBEB;border-radius:10px;padding:12px;text-align:center;">
+          <div style="font-size:20px;font-weight:800;color:#B45309;">${un}</div><div style="font-size:11px;color:#B45309;font-weight:700;">Tidak Dijawab</div>
+        </div>
+      </div>
+
+      <h2 style="font-size:14px;font-weight:800;margin:0 0 12px;">Rekapitulasi Seluruh Soal</h2>
+      ${rows}
+      <p style="text-align:center;font-size:10.5px;color:#94A3B8;margin-top:16px;">Dibuat otomatis oleh Simulator Ujian TKA Matematika</p>
+    </div>`;
+  }
+
+  function stripTags(html){
+    const d = document.createElement('div'); d.innerHTML = html||''; return d.textContent || '';
+  }
+
+  function downloadPDF(){
+    const btnLabel = document.getElementById('pdf-btn-label');
+    if(typeof html2pdf==='undefined'){
+      alert('Modul pembuat PDF belum termuat (kemungkinan koneksi ke CDN diblokir). Silakan gunakan menu Cetak (Ctrl+P) pada browser sebagai alternatif, lalu pilih "Simpan sebagai PDF".');
+      window.print();
+      return;
+    }
+    if(btnLabel) btnLabel.textContent = 'Menyiapkan PDF...';
+    let portal = document.getElementById('print-report-portal');
+    if(portal) portal.remove();
+    portal = document.createElement('div');
+    portal.id = 'print-report-portal';
+    const holder = document.createElement('div');
+    holder.id = 'print-report';
+    holder.innerHTML = buildPrintReport();
+    portal.appendChild(holder);
+    document.body.appendChild(portal);
+    renderMathIn(holder);
+    const cleanup = ()=>{
+      portal.remove();
+      if(btnLabel) btnLabel.textContent = 'Download Hasil (PDF)';
+    };
+    setTimeout(()=>{
+      if(!holder.offsetWidth || !holder.scrollHeight){
+        cleanup();
+        alert('Gagal menyiapkan konten PDF (halaman kosong). Silakan coba lagi, atau gunakan menu Cetak (Ctrl+P) lalu pilih "Simpan sebagai PDF".');
+        return;
+      }
+      const opt = {
+        margin: 0,
+        filename: `Hasil-Ujian-${(state.identity.name||'peserta').replace(/\s+/g,'_')}.pdf`,
+        image: { type:'jpeg', quality:0.95 },
+        html2canvas: { scale:2, useCORS:true, backgroundColor:'#ffffff', scrollX:0, scrollY:0, x:0, y:0, width:holder.scrollWidth, height:holder.scrollHeight },
+        jsPDF: { unit:'pt', format:'a4', orientation:'portrait' },
+        pagebreak: { mode:['css','legacy'] }
+      };
+      html2pdf().set(opt).from(holder).save().then(cleanup).catch((err)=>{
+        cleanup();
+        alert('Gagal membuat PDF: ' + (err && err.message ? err.message : 'terjadi kesalahan tak terduga') + '. Silakan coba lagi, atau gunakan menu Cetak (Ctrl+P) lalu pilih "Simpan sebagai PDF".');
+      });
+    }, 300);
+  }
+
+  /* ============================================================ TIMER */
+  function startTimer(){
+    stopTimer();
+    state.timerId = setInterval(()=>{
+      state.timeLeftSec--;
+      const el = document.getElementById('timer-text');
+      const pill = document.getElementById('timer-pill');
+      if(el) el.textContent = fmtTime(state.timeLeftSec);
+      if(pill){
+        if(state.timeLeftSec<=300){ pill.classList.add('border-bad-600','text-bad-700','bg-bad-50'); pill.classList.remove('border-brand-600','text-brand-700','bg-brand-50'); }
+      }
+      if(state.timeLeftSec<=0){
+        stopTimer();
+        finishExam(true);
+      }
+    }, 1000);
+  }
+  function stopTimer(){ if(state.timerId){ clearInterval(state.timerId); state.timerId=null; } }
+
+  function finishExam(auto){
+    stopTimer();
+    state.finishedAt = new Date();
+    state.confirmOpen = false;
+    state.screen = 'result';
+    state.reviewAll = false;
+    render();
+    window.scrollTo({top:0, behavior:'instant'});
+  }
+
+  /* ============================================================ EVENTS */
+  function bindEvents(){
+    if(state.screen==='start'){
+      const nameI = document.getElementById('inp-name');
+      const kelasI = document.getElementById('inp-kelas');
+      const sekolahI = document.getElementById('inp-sekolah');
+      if(nameI) nameI.oninput = e=> state.identity.name = e.target.value;
+      if(kelasI) kelasI.oninput = e=> state.identity.kelas = e.target.value;
+      if(sekolahI) sekolahI.oninput = e=> state.identity.sekolah = e.target.value;
+
+      const slider = document.getElementById('dur-slider');
+      if(slider) slider.oninput = e=>{
+        state.durationMin = parseInt(e.target.value,10);
+        const lbl = document.getElementById('dur-label');
+        if(lbl) lbl.textContent = state.durationMin+' menit';
+      };
+
+      const btn = document.getElementById('btn-start');
+      if(btn) btn.onclick = ()=>{
+        const name=(document.getElementById('inp-name').value||'').trim();
+        const kelas=(document.getElementById('inp-kelas').value||'').trim();
+        const sekolah=(document.getElementById('inp-sekolah').value||'').trim();
+        if(!name || !kelas || !sekolah){
+          document.getElementById('form-err').classList.remove('hidden');
+          return;
+        }
+        state.identity = {name, kelas, sekolah};
+        state.timeLeftSec = state.durationMin*60;
+        state.startedAt = new Date();
+        state.currentIndex = 0;
+        state.screen = 'exam';
+        render();
+        startTimer();
+      };
+      return;
+    }
+
+    if(state.screen==='exam'){
+      // option interactions
+      $app.querySelectorAll('[data-pg-opt]').forEach(el=>{
+        el.onclick = ()=>{
+          const qno = parseInt(el.dataset.qno,10), val = parseInt(el.dataset.pgOpt,10);
+          state.answers[qno].pg = state.answers[qno].pg===val ? null : val;
+          render();
+        };
+      });
+      $app.querySelectorAll('[data-mcma-opt]').forEach(el=>{
+        el.onclick = ()=>{
+          const qno = parseInt(el.dataset.qno,10), val = parseInt(el.dataset.mcmaOpt,10);
+          const set = state.answers[qno].mcma;
+          set.has(val) ? set.delete(val) : set.add(val);
+          render();
+        };
+      });
+      $app.querySelectorAll('[data-kat-opt]').forEach(el=>{
+        el.onclick = ()=>{
+          const qno = parseInt(el.dataset.qno,10), idx = parseInt(el.dataset.katOpt,10), val = el.dataset.katVal;
+          const arr = state.answers[qno].kat;
+          arr[idx] = arr[idx]===val ? null : val;
+          render();
+        };
+      });
+
+      const flagBtn = document.getElementById('btn-flag');
+      if(flagBtn) flagBtn.onclick = ()=>{
+        const qno = parseInt(flagBtn.dataset.qno,10);
+        state.flagged.has(qno) ? state.flagged.delete(qno) : state.flagged.add(qno);
+        render();
+      };
+
+      const prevBtn = document.getElementById('btn-prev');
+      if(prevBtn) prevBtn.onclick = ()=>{ if(state.currentIndex>0){ state.currentIndex--; render(); window.scrollTo({top:0,behavior:'smooth'}); } };
+      const nextBtn = document.getElementById('btn-next');
+      if(nextBtn) nextBtn.onclick = ()=>{ if(state.currentIndex<N-1){ state.currentIndex++; render(); window.scrollTo({top:0,behavior:'smooth'}); } };
+
+      $app.querySelectorAll('[data-jump]').forEach(el=>{
+        el.onclick = ()=>{
+          state.currentIndex = parseInt(el.dataset.jump,10);
+          state.jumpMenuOpen = false;
+          render();
+          window.scrollTo({top:0,behavior:'smooth'});
+        };
+      });
+
+      const mobileNavBtn = document.getElementById('btn-mobile-nav');
+      if(mobileNavBtn) mobileNavBtn.onclick = ()=>{ state.jumpMenuOpen = true; render(); };
+      const closeJump = document.getElementById('btn-close-jump');
+      if(closeJump) closeJump.onclick = ()=>{ state.jumpMenuOpen = false; render(); };
+      const jumpOverlay = document.getElementById('mobile-jump-overlay');
+      if(jumpOverlay) jumpOverlay.addEventListener('click', e=>{ if(e.target===jumpOverlay){ state.jumpMenuOpen=false; render(); } });
+
+      const finishBtn = document.getElementById('btn-finish');
+      if(finishBtn) finishBtn.onclick = ()=>{ state.confirmOpen = true; render(); };
+      const cancelFinish = document.getElementById('btn-cancel-finish');
+      if(cancelFinish) cancelFinish.onclick = ()=>{ state.confirmOpen = false; render(); };
+      const confirmFinish = document.getElementById('btn-confirm-finish');
+      if(confirmFinish) confirmFinish.onclick = ()=> finishExam(false);
+      const overlay = document.getElementById('confirm-overlay');
+      if(overlay) overlay.addEventListener('click', e=>{ if(e.target===overlay){ state.confirmOpen=false; render(); } });
+      return;
+    }
+
+    if(state.screen==='result'){
+      const restartBtn = document.getElementById('btn-restart');
+      if(restartBtn) restartBtn.onclick = ()=>{
+        EXAM_DATA.forEach(q=>{
+          if(q.type==='pg') state.answers[q.no] = { pg:null };
+          else if(q.type==='mcma') state.answers[q.no] = { mcma:new Set() };
+          else if(q.type==='kat') state.answers[q.no] = { kat: q.statements.map(()=>null) };
+        });
+        state.flagged.clear();
+        state.currentIndex = 0;
+        state.reviewAll = false;
+        state.screen = 'start';
+        render();
+        window.scrollTo({top:0,behavior:'instant'});
+      };
+      const openAll = document.getElementById('btn-open-all');
+      if(openAll) openAll.onclick = ()=>{ state.reviewAll = !state.reviewAll; render(); };
+      const pdfBtn = document.getElementById('btn-download-pdf');
+      if(pdfBtn) pdfBtn.onclick = downloadPDF;
+
+      $app.querySelectorAll('[data-toggle-review]').forEach(el=>{
+        el.onclick = ()=>{
+          const qno = el.dataset.toggleReview;
+          const card = document.getElementById('review-'+qno);
+          const body = card.querySelector('[data-review-body]');
+          const chevron = card.querySelector('svg, i[data-lucide]');
+          const willOpen = body.classList.contains('hidden');
+          body.classList.toggle('hidden');
+          const chevronEl = card.querySelector('button > span:last-child');
+          if(chevronEl) chevronEl.innerHTML = icon(willOpen?'chevron-up':'chevron-down','w-4.5 h-4.5');
+          mountIcons();
+          if(willOpen) renderMathIn(body);
+        };
+      });
+      return;
+    }
+  }
+
+  /* ============================================================ INIT */
+  render();
+
+})();
+</script>
+</body>
+</html>
